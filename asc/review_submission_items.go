@@ -103,18 +103,18 @@ type reviewSubmissionItemCreateRequest struct {
 //
 // https://developer.apple.com/documentation/appstoreconnectapi/appstoreversionsubmissioncreaterequest/data/relationships
 type reviewSubmissionItemCreateRequestRelationships struct {
-	AppCustomProductPageVersion relationshipDeclaration `json:"appCustomProductPageVersion"`
-	AppEvent                    relationshipDeclaration `json:"appEvent"`
-	AppStoreVersion             relationshipDeclaration `json:"appStoreVersion"`
-	AppStoreVersionExperiment   relationshipDeclaration `json:"appStoreVersionExperiment"`
-	AppStoreVersionExperimentV2 relationshipDeclaration `json:"appStoreVersionExperimentV2"`
-	ReviewSubmission            relationshipDeclaration `json:"reviewSubmission"`
+	AppCustomProductPageVersion *relationshipDeclaration `json:"appCustomProductPageVersion,omitempty"`
+	AppEvent                    *relationshipDeclaration `json:"appEvent,omitempty"`
+	AppStoreVersion             *relationshipDeclaration `json:"appStoreVersion,omitempty"`
+	AppStoreVersionExperiment   *relationshipDeclaration `json:"appStoreVersionExperiment,omitempty"`
+	AppStoreVersionExperimentV2 *relationshipDeclaration `json:"appStoreVersionExperimentV2,omitempty"`
+	ReviewSubmission            relationshipDeclaration  `json:"reviewSubmission"`
 }
 
 // CreateReviewSubmissionItem finds and lists review submissions for all apps in App Store Connect.
 //
 // https://developer.apple.com/documentation/appstoreconnectapi/post_v1_reviewsubmissionitems
-func (s *ReviewSubmissionsService) CreateReviewSubmissionItem(ctx context.Context, appStoreVersionID string, reviewSubmissionID string) (*ReviewSubmissionItemResponse, *Response, error) {
+func (s *ReviewSubmissionsService) CreateReviewSubmissionItem(ctx context.Context, appStoreVersionID *string, reviewSubmissionID string) (*ReviewSubmissionItemResponse, *Response, error) {
 	req := reviewSubmissionItemCreateRequest{
 		Relationships: reviewSubmissionItemCreateRequestRelationships{
 			ReviewSubmission: relationshipDeclaration{
@@ -123,14 +123,16 @@ func (s *ReviewSubmissionsService) CreateReviewSubmissionItem(ctx context.Contex
 					Type: "reviewSubmissions",
 				},
 			},
-			AppStoreVersion: relationshipDeclaration{
-				Data: RelationshipData{
-					ID:   appStoreVersionID,
-					Type: "appStoreVersions",
-				},
-			},
 		},
 		Type: "reviewSubmissionItems",
+	}
+	if appStoreVersionID != nil {
+		req.Relationships.AppStoreVersion = &relationshipDeclaration{
+			Data: RelationshipData{
+				ID:   *appStoreVersionID,
+				Type: "appStoreVersions",
+			},
+		}
 	}
 
 	res := new(ReviewSubmissionItemResponse)
