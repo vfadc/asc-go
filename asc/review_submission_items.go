@@ -24,7 +24,7 @@ import (
 	"context"
 )
 
-// ReviewSubmission defines model for ReviewSubmission.
+// ReviewSubmissionItem defines model for ReviewSubmissionItem.
 //
 // https://developer.apple.com/documentation/appstoreconnectapi/reviewsubmissionitem
 type ReviewSubmissionItem struct {
